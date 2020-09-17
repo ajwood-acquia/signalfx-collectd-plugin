@@ -438,8 +438,7 @@ class Aggregator(object):
 
     def __init__(self, hostname, interval=1.0, expiry_seconds=300,
                  formatter=None, recent_point_threshold=None,
-                 histogram_aggregates=None, histogram_percentiles=None,
-                 utf8_decoding=False):
+                 histogram_aggregates=None, histogram_percentiles=None):
         self.events = []
         self.service_checks = []
         self.total_count = 0
@@ -462,8 +461,6 @@ class Aggregator(object):
                 'percentiles': histogram_percentiles
             }
         }
-
-        self.utf8_decoding = utf8_decoding
 
     def packets_per_second(self, interval):
         if interval == 0:
@@ -621,14 +618,7 @@ class Aggregator(object):
             raise Exception('Unparseable service check packet: %s' % packet)
 
     def submit_packets(self, packets):
-        # We should probably consider that packets are always encoded
-        # in utf8, but decoding all packets has an perf overhead of 7%
-        # So we let the user decide if we wants utf8 by default
-        # Keep a very conservative approach anyhow
         # Clients MUST always send UTF-8 encoded content
-        if self.utf8_decoding:
-            packets = str(packets, 'utf-8', errors='replace')
-
         for packet in packets.splitlines():
             if not packet.strip():
                 continue
@@ -758,8 +748,7 @@ class MetricsBucketAggregator(Aggregator):
 
     def __init__(self, hostname, interval=1.0, expiry_seconds=300,
                  formatter=None, recent_point_threshold=None,
-                 histogram_aggregates=None, histogram_percentiles=None,
-                 utf8_decoding=False):
+                 histogram_aggregates=None, histogram_percentiles=None):
         super(MetricsBucketAggregator, self).__init__(
             hostname,
             interval,
@@ -767,8 +756,7 @@ class MetricsBucketAggregator(Aggregator):
             formatter,
             recent_point_threshold,
             histogram_aggregates,
-            histogram_percentiles,
-            utf8_decoding
+            histogram_percentiles
         )
         self.metric_by_bucket = {}
         self.last_sample_time_by_context = {}
@@ -898,8 +886,7 @@ class MetricsAggregator(Aggregator):
 
     def __init__(self, hostname, interval=1.0, expiry_seconds=300,
                  formatter=None, recent_point_threshold=None,
-                 histogram_aggregates=None, histogram_percentiles=None,
-                 utf8_decoding=False):
+                 histogram_aggregates=None, histogram_percentiles=None):
         super(MetricsAggregator, self).__init__(
             hostname,
             interval,
@@ -908,7 +895,6 @@ class MetricsAggregator(Aggregator):
             recent_point_threshold,
             histogram_aggregates,
             histogram_percentiles,
-            utf8_decoding
         )
         self.metrics = {}
         self.metric_type_to_class = {

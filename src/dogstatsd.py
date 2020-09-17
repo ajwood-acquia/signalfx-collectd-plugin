@@ -201,7 +201,6 @@ def init(server_host, port, timeout=UDP_SOCKET_TIMEOUT, aggregator_interval=DOGS
         formatter=None,
         histogram_aggregates=DEFAULT_HISTOGRAM_AGGREGATES,
         histogram_percentiles=DEFAULT_HISTOGRAM_PERCENTILES,
-        utf8_decoding=True,
     )
 
     server = Server(aggregator, server_host, port, timeout=timeout)
